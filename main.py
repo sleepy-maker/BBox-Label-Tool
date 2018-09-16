@@ -7,8 +7,12 @@
 #
 #-------------------------------------------------------------------------------
 from __future__ import division
-from Tkinter import *
-import tkMessageBox
+try:
+    import tkinter
+    import tkinter.messagebox
+except:
+    import Tkinter as tkinter
+    import tkMessageBox 
 from PIL import Image, ImageTk
 import os
 import glob
@@ -24,9 +28,11 @@ class LabelTool():
         # set up the main frame
         self.parent = master
         self.parent.title("LabelTool")
-        self.frame = Frame(self.parent)
-        self.frame.pack(fill=BOTH, expand=1)
-        self.parent.resizable(width = FALSE, height = FALSE)
+        self.frame = tkinter.Frame(self.parent)
+        self.frame.pack(fill=tkinter.BOTH, expand=1)
+        # self.parent.resizable(width = FALSE, height = FALSE)
+        self.parent.resizable(0,0)
+
 
         # initialize global state
         self.imageDir = ''
@@ -55,62 +61,62 @@ class LabelTool():
 
         # ----------------- GUI stuff ---------------------
         # dir entry & load
-        self.label = Label(self.frame, text = "Image Dir:")
-        self.label.grid(row = 0, column = 0, sticky = E)
-        self.entry = Entry(self.frame)
-        self.entry.grid(row = 0, column = 1, sticky = W+E)
-        self.ldBtn = Button(self.frame, text = "Load", command = self.loadDir)
-        self.ldBtn.grid(row = 0, column = 2, sticky = W+E)
+        self.label = tkinter.Label(self.frame, text = "Image Dir:")
+        self.label.grid(row = 0, column = 0, sticky = "e")
+        self.entry = tkinter.Entry(self.frame)
+        self.entry.grid(row = 0, column = 1, sticky = "we")
+        self.ldBtn = tkinter.Button(self.frame, text = "Load", command = self.loadDir)
+        self.ldBtn.grid(row = 0, column = 2, sticky = "we")
 
         # main panel for labeling
-        self.mainPanel = Canvas(self.frame, cursor='tcross')
+        self.mainPanel = tkinter.Canvas(self.frame, cursor='tcross')
         self.mainPanel.bind("<Button-1>", self.mouseClick)
         self.mainPanel.bind("<Motion>", self.mouseMove)
         self.parent.bind("<Escape>", self.cancelBBox)  # press <Espace> to cancel current bbox
         self.parent.bind("s", self.cancelBBox)
         self.parent.bind("a", self.prevImage) # press 'a' to go backforward
         self.parent.bind("d", self.nextImage) # press 'd' to go forward
-        self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
+        self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = "wn")
 
         # showing bbox info & delete bbox
-        self.lb1 = Label(self.frame, text = 'Bounding boxes:')
-        self.lb1.grid(row = 1, column = 2,  sticky = W+N)
-        self.listbox = Listbox(self.frame, width = 22, height = 12)
-        self.listbox.grid(row = 2, column = 2, sticky = N)
-        self.btnDel = Button(self.frame, text = 'Delete', command = self.delBBox)
-        self.btnDel.grid(row = 3, column = 2, sticky = W+E+N)
-        self.btnClear = Button(self.frame, text = 'ClearAll', command = self.clearBBox)
-        self.btnClear.grid(row = 4, column = 2, sticky = W+E+N)
+        self.lb1 = tkinter.Label(self.frame, text = 'Bounding boxes:')
+        self.lb1.grid(row = 1, column = 2,  sticky = "wn")
+        self.listbox = tkinter.Listbox(self.frame, width = 22, height = 12)
+        self.listbox.grid(row = 2, column = 2, sticky = "n")
+        self.btnDel = tkinter.Button(self.frame, text = 'Delete', command = self.delBBox)
+        self.btnDel.grid(row = 3, column = 2, sticky = "wen")
+        self.btnClear = tkinter.Button(self.frame, text = 'ClearAll', command = self.clearBBox)
+        self.btnClear.grid(row = 4, column = 2, sticky = "wen")
 
         # control panel for image navigation
-        self.ctrPanel = Frame(self.frame)
-        self.ctrPanel.grid(row = 5, column = 1, columnspan = 2, sticky = W+E)
-        self.prevBtn = Button(self.ctrPanel, text='<< Prev', width = 10, command = self.prevImage)
-        self.prevBtn.pack(side = LEFT, padx = 5, pady = 3)
-        self.nextBtn = Button(self.ctrPanel, text='Next >>', width = 10, command = self.nextImage)
-        self.nextBtn.pack(side = LEFT, padx = 5, pady = 3)
-        self.progLabel = Label(self.ctrPanel, text = "Progress:     /    ")
-        self.progLabel.pack(side = LEFT, padx = 5)
-        self.tmpLabel = Label(self.ctrPanel, text = "Go to Image No.")
-        self.tmpLabel.pack(side = LEFT, padx = 5)
-        self.idxEntry = Entry(self.ctrPanel, width = 5)
-        self.idxEntry.pack(side = LEFT)
-        self.goBtn = Button(self.ctrPanel, text = 'Go', command = self.gotoImage)
-        self.goBtn.pack(side = LEFT)
+        self.ctrPanel = tkinter.Frame(self.frame)
+        self.ctrPanel.grid(row = 5, column = 1, columnspan = 2, sticky = "we")
+        self.prevBtn = tkinter.Button(self.ctrPanel, text='<< Prev', width = 10, command = self.prevImage)
+        self.prevBtn.pack(side = "left", padx = 5, pady = 3)
+        self.nextBtn = tkinter.Button(self.ctrPanel, text='Next >>', width = 10, command = self.nextImage)
+        self.nextBtn.pack(side = "left", padx = 5, pady = 3)
+        self.progLabel = tkinter.Label(self.ctrPanel, text = "Progress:     /    ")
+        self.progLabel.pack(side = "left", padx = 5)
+        self.tmpLabel = tkinter.Label(self.ctrPanel, text = "Go to Image No.")
+        self.tmpLabel.pack(side = "left", padx = 5)
+        self.idxEntry = tkinter.Entry(self.ctrPanel, width = 5)
+        self.idxEntry.pack(side = "left")
+        self.goBtn = tkinter.Button(self.ctrPanel, text = 'Go', command = self.gotoImage)
+        self.goBtn.pack(side = "left")
 
         # example pannel for illustration
-        self.egPanel = Frame(self.frame, border = 10)
-        self.egPanel.grid(row = 1, column = 0, rowspan = 5, sticky = N)
-        self.tmpLabel2 = Label(self.egPanel, text = "Examples:")
-        self.tmpLabel2.pack(side = TOP, pady = 5)
+        self.egPanel = tkinter.Frame(self.frame, border = 10)
+        self.egPanel.grid(row = 1, column = 0, rowspan = 5, sticky = "n")
+        self.tmpLabel2 = tkinter.Label(self.egPanel, text = "Examples:")
+        self.tmpLabel2.pack(side = "top", pady = 5)
         self.egLabels = []
         for i in range(3):
-            self.egLabels.append(Label(self.egPanel))
-            self.egLabels[-1].pack(side = TOP)
+            self.egLabels.append(tkinter.Label(self.egPanel))
+            self.egLabels[-1].pack(side = "top")
 
         # display mouse position
-        self.disp = Label(self.ctrPanel, text='')
-        self.disp.pack(side = RIGHT)
+        self.disp = tkinter.Label(self.ctrPanel, text='')
+        self.disp.pack(side = "right")
 
         self.frame.columnconfigure(1, weight = 1)
         self.frame.rowconfigure(4, weight = 1)
@@ -133,7 +139,7 @@ class LabelTool():
         self.imageDir = os.path.join(r'./Images', '%03d' %(self.category))
         self.imageList = glob.glob(os.path.join(self.imageDir, '*.JPEG'))
         if len(self.imageList) == 0:
-            print 'No .JPEG images found in the specified dir!'
+            print('No .JPEG images found in the specified dir!')
             return
 
         # default to the 1st image in the collection
@@ -164,7 +170,7 @@ class LabelTool():
             self.egLabels[i].config(image = self.egList[-1], width = SIZE[0], height = SIZE[1])
 
         self.loadImage()
-        print '%d images loaded from %s' %(self.total, s)
+        print('%d images loaded from %s' %(self.total, s))
 
     def loadImage(self):
         # load image
@@ -172,7 +178,7 @@ class LabelTool():
         self.img = Image.open(imagepath)
         self.tkimg = ImageTk.PhotoImage(self.img)
         self.mainPanel.config(width = max(self.tkimg.width(), 400), height = max(self.tkimg.height(), 400))
-        self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
+        self.mainPanel.create_image(0, 0, image = self.tkimg, anchor="nw")
         self.progLabel.config(text = "%04d/%04d" %(self.cur, self.total))
 
         # load labels
@@ -188,14 +194,14 @@ class LabelTool():
                         bbox_cnt = int(line.strip())
                         continue
                     tmp = [int(t.strip()) for t in line.split()]
-##                    print tmp
+##                    print(tmp)
                     self.bboxList.append(tuple(tmp))
                     tmpId = self.mainPanel.create_rectangle(tmp[0], tmp[1], \
                                                             tmp[2], tmp[3], \
                                                             width = 2, \
                                                             outline = COLORS[(len(self.bboxList)-1) % len(COLORS)])
                     self.bboxIdList.append(tmpId)
-                    self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(tmp[0], tmp[1], tmp[2], tmp[3]))
+                    self.listbox.insert("END", '(%d, %d) -> (%d, %d)' %(tmp[0], tmp[1], tmp[2], tmp[3]))
                     self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
 
     def saveImage(self):
@@ -203,7 +209,7 @@ class LabelTool():
             f.write('%d\n' %len(self.bboxList))
             for bbox in self.bboxList:
                 f.write(' '.join(map(str, bbox)) + '\n')
-        print 'Image No. %d saved' %(self.cur)
+        print('Image No. %d saved' %(self.cur))
 
 
     def mouseClick(self, event):
@@ -215,7 +221,7 @@ class LabelTool():
             self.bboxList.append((x1, y1, x2, y2))
             self.bboxIdList.append(self.bboxId)
             self.bboxId = None
-            self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(x1, y1, x2, y2))
+            self.listbox.insert("END", '(%d, %d) -> (%d, %d)' %(x1, y1, x2, y2))
             self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
         self.STATE['click'] = 1 - self.STATE['click']
 
@@ -287,7 +293,7 @@ class LabelTool():
 ##        self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
 
 if __name__ == '__main__':
-    root = Tk()
+    root = tkinter.Tk()
     tool = LabelTool(root)
     root.resizable(width =  True, height = True)
     root.mainloop()
